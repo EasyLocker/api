@@ -1,12 +1,20 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
 //var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const logger = require('morgan');
 
-var usersRouter = require('./routes/users');
+const usersRouter = require('./routes/users');
 
-var app = express();
+//Normalize port
+const dotenv = require('dotenv');
+dotenv.config();
+
+const app = express();
+
+app.listen(process.env.PORT, function() {
+  console.log('Server running on port ', process.env.PORT);
+});
 
 // view engine setup
 // app.set('views', path.join(__dirname, 'views'));

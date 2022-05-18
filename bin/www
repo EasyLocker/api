@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 
+
+
+//NO MORE USED
+
+
 /**
  * Module dependencies.
  */
@@ -7,6 +12,7 @@
 var app = require('../app');
 var debug = require('debug')('api:server');
 var http = require('http');
+var db = require('../database/db_connection');
 
 /**
  * Get port from environment and store in Express.
