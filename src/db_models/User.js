@@ -1,4 +1,4 @@
-const db = require('../../database/db');
+const db = require('mongoose');
 
 const usersSchema = new db.Schema({
     name: String,
