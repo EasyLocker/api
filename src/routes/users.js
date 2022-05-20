@@ -6,11 +6,37 @@ const {log} = require("debug");
 const {isEmailValid} = require("../utils/strings_utils");
 const saltRounds = 10;
 
-/* GET users listing. */
+/**
+ * @openapi
+ * /api/v1/users:
+ *   get:
+ *     description: Welcome to swagger-jsdoc
+ *
+ */
 router.get('/', function (req, res, next) {
     res.send('respond with a resource');
 });
 
+/**
+ * @openapi
+ * /api/v1/users/register:
+ *   post:
+ *     description: User registration (creation of a user in the mongodb)
+ *     requestBody:
+ *       require: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *
+ */
 //Create a user
 router.post('/register', async (req, res, next) => {
     const { name, email, password } = req.body;

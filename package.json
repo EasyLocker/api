@@ -16,6 +16,8 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.3",
     "morgan": "~1.9.1",
-    "nodemon": "^2.0.16"
+    "nodemon": "^2.0.16",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.4.0"
   }
 }
