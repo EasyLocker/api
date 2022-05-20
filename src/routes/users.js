@@ -8,17 +8,6 @@ const saltRounds = 10;
 
 /**
  * @openapi
- * /api/v1/users:
- *   get:
- *     description: Welcome to swagger-jsdoc
- *
- */
-router.get('/', function (req, res, next) {
-    res.send('respond with a resource');
-});
-
-/**
- * @openapi
  * /api/v1/users/register:
  *   post:
  *     description: User registration (creation of a user in the mongodb)
