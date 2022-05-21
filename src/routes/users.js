@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const {log} = require("debug");
 const {isEmailValid} = require("../utils/strings_utils");
 const saltRounds = 10;
+const roles = require('../config/roles');
 
 /**
  * @openapi
@@ -12,7 +13,7 @@ const saltRounds = 10;
  *   post:
  *     tags:
  *     - Users
- *     description: User registration (creation of a user in the mongodb)
+ *     summary: User registration (creation of a user in the mongodb)
  *     requestBody:
  *       require: true
  *       content:
@@ -45,16 +46,20 @@ router.post('/register', async (req, res, next) => {
     try {
         //password hashing + salt
         const hash = await bcrypt.hash(password, saltRounds);
-        const user = new User({name, email, password: hash});
+        const user = new User({name, email, password: hash, role: roles.user});
 
         //storing in the db
         await user.save();
-        res.send();
+
+        res.json({ success: true, token, email: user.email, id: user._id, role: roles.user //, self: "api/v1/users/" + user._id
+        });
     } catch (err) {
         console.log(err);
         res.status(500);
         res.send('Cannot create user');
     }
 });
+
+//router.get('/:userId' ..
 
 module.exports = router;

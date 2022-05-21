@@ -3,6 +3,7 @@ const router = express.Router();
 const User = require('../db_models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const roles = require('../config/roles');
 
 /**
  * @openapi
@@ -11,7 +12,7 @@ const bcrypt = require('bcrypt');
  *     post:
  *       tags:
  *       - Users
- *       description: User authentication (login)
+ *       summary: User authentication (login)
  *       requestBody:
  *         require: true
  *         content:
@@ -32,22 +33,22 @@ router.post('/', async function(req, res) {
 
     //console.log(dbPassword);
     //console.log(req.body.password);
+    //console.log(await bcrypt.compare(req.body.password, dbPassword));
 
-    console.log(await bcrypt.compare(req.body.password, dbPassword));
     if (!(await bcrypt.compare(req.body.password, dbPassword))){
-        res.json({success:false,message:'Wrong password'}); //check error in here
-        //res.status(400);
+        res.status(400);
+        res.json({success:false,message:'Wrong password'});
+        return;
     }
 
     // user authenticated -> create a token
     let payload = { email: user.email, id: user._id}
 
-    let options = { expiresIn: 86400 } // expires in 24 hours
+    let options = { expiresIn: 3600 } // expires in 24 hours
 
     let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-    res.json({ success: true, message: 'Enjoy your token!',
-        token: token, email: user.email, id: user._id, self: "api/v1/" + user._id
+    res.json({ id: user._id, token, email: user.email, role: roles.user //, self: "api/v1/users/" + user._id
     });
 });
 
