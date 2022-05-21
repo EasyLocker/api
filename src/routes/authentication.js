@@ -4,6 +4,26 @@ const User = require('../db_models/User');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+/**
+ * @openapi
+ * paths:
+ *   /api/v1/authenticate:
+ *     post:
+ *       tags:
+ *       - Users
+ *       description: User authentication (login)
+ *       requestBody:
+ *         require: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                 password:
+ *                   type: string
+ */
 //authentication
 router.post('/', async function(req, res) {
     let user = await User.findOne({ email: req.body.email }).exec()

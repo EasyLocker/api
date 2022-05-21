@@ -19,7 +19,7 @@ configureSwagger(app);
 // ------------------ Routes ------------------
 
 app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/authenticate', authenticationRouter); //lo mettiamo sotto /api/v1/users?
+app.use('/api/v1/authenticate', authenticationRouter); //lo mettiamo sotto /api/v1/users/authenticate?
 
 // any path after token checker will require a valid token
 //app.use(tokenChecker);

@@ -10,6 +10,8 @@ const saltRounds = 10;
  * @openapi
  * /api/v1/users/register:
  *   post:
+ *     tags:
+ *     - Users
  *     description: User registration (creation of a user in the mongodb)
  *     requestBody:
  *       require: true
