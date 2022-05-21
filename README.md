@@ -7,4 +7,5 @@ Create an `.env` in the root folder with those environment variables (change the
 ```dotenv
 DB_URL=mongodb://admin:admin@localhost/?retryWrites=true&w=majority
 PORT=3000
+SUPER_SECRET='EasyLockerSuperSecret2022'
 ```

@@ -2,14 +2,19 @@ const express = require('express');
 const path = require('path');
 const logger = require('morgan');
 const configureSwagger = require('./config/swaggerConfig');
+const cors = require("cors");
 
 const usersRouter = require('./routes/users');
 const authenticationRouter = require('./routes/authentication');
 
 const tokenChecker = require('./config/tokenChecker');
+const {log} = require("debug");
 
 const app = express();
 
+app.use(cors({
+  origin: ['http://localhost:3000']
+}))
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -19,7 +24,7 @@ configureSwagger(app);
 // ------------------ Routes ------------------
 
 app.use('/api/v1/users', usersRouter);
-app.use('/api/v1/authenticate', authenticationRouter); //lo mettiamo sotto /api/v1/users/authenticate?
+app.use('/api/v1/authenticate', authenticationRouter); //lo mettiamo sotto /api/v1/users/u?
 
 // any path after token checker will require a valid token
 //app.use(tokenChecker);

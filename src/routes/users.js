@@ -6,6 +6,7 @@ const {log} = require("debug");
 const {isEmailValid} = require("../utils/strings_utils");
 const saltRounds = 10;
 const roles = require('../config/roles');
+const jwt = require("jsonwebtoken");
 
 /**
  * @openapi
@@ -31,19 +32,21 @@ const roles = require('../config/roles');
  */
 //Create a user
 router.post('/register', async (req, res, next) => {
-    const { name, email, password } = req.body;
-
-    if (!isEmailValid(email)) {
-        res.status(400);
-        res.send('Invalid email');
-    }
-
-    if (User.exists({ 'email': email })) {
-        res.status(400);
-        res.send('Email already used');
-    }
+    const {name, email, password} = req.body;
 
     try {
+        if (!isEmailValid(email)) {
+            res.status(400);
+            res.json({message: 'Invalid email'});
+            return;
+        }
+
+        if (await User.exists({'email': email})) {
+            res.status(400);
+            res.json({message: 'Email already used'});
+            return;
+        }
+
         //password hashing + salt
         const hash = await bcrypt.hash(password, saltRounds);
         const user = new User({name, email, password: hash, role: roles.user});
@@ -51,12 +54,18 @@ router.post('/register', async (req, res, next) => {
         //storing in the db
         await user.save();
 
-        res.json({ success: true, token, email: user.email, id: user._id, role: roles.user //, self: "api/v1/users/" + user._id
+        //login token creation
+        let payload = { email: user.email, id: user._id}
+        let options = { expiresIn: 3600 } // expires in 24 hours
+        let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
+
+        res.json({ token, email: user.email, id: user._id, role: roles.user //, self: "api/v1/users/" + user._id
         });
     } catch (err) {
-        console.log(err);
-        res.status(500);
-        res.send('Cannot create user');
+        next(err)
+        // console.log(err);
+        // res.status(500);
+        // res.json({message: 'Cannot create user'});
     }
 });
 

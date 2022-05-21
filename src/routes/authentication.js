@@ -28,7 +28,11 @@ const roles = require('../config/roles');
 //authentication
 router.post('/', async function(req, res) {
     let user = await User.findOne({ email: req.body.email }).exec()
-    if (!user) res.json({success:false,message:'User not found'})
+    if (!user){
+        res.status(400);
+        res.json({ message:'User not found' });
+        return;
+    }
     let dbPassword = user.password;
 
     //console.log(dbPassword);
@@ -37,7 +41,7 @@ router.post('/', async function(req, res) {
 
     if (!(await bcrypt.compare(req.body.password, dbPassword))){
         res.status(400);
-        res.json({success:false,message:'Wrong password'});
+        res.json({ message:'Wrong password' });
         return;
     }
 
