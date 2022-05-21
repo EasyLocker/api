@@ -24,6 +24,8 @@ const jwt = require("jsonwebtoken");
  *             properties:
  *               name:
  *                 type: string
+ *               surname:
+ *                 type: string
  *               email:
  *                 type: string
  *               password:
@@ -32,7 +34,30 @@ const jwt = require("jsonwebtoken");
  */
 //Create a user
 router.post('/register', async (req, res, next) => {
-    const {name, email, password} = req.body;
+    const {name, surname, email, password} = req.body;
+    if (!name){
+        res.status(400);
+        res.json({message: 'Missing name'});
+        return;
+    }
+
+    if (!surname){
+        res.status(400);
+        res.json({message: 'Missing surname'});
+        return;
+    }
+
+    if (!email){
+        res.status(400);
+        res.json({message: 'Missing email'});
+        return;
+    }
+
+    if (!password){
+        res.status(400);
+        res.json({message: 'Missing password'});
+        return;
+    }
 
     try {
         if (!isEmailValid(email)) {
@@ -49,7 +74,7 @@ router.post('/register', async (req, res, next) => {
 
         //password hashing + salt
         const hash = await bcrypt.hash(password, saltRounds);
-        const user = new User({name, email, password: hash, role: roles.user});
+        const user = new User({name, surname, email, password: hash, role: roles.user});
 
         //storing in the db
         await user.save();
