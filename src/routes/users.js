@@ -59,7 +59,14 @@ router.post('/register', async (req, res, next) => {
         let options = { expiresIn: 3600 } // expires in 24 hours
         let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-        res.json({ token, email: user.email, id: user._id, role: roles.user //, self: "api/v1/users/" + user._id
+        res.json({
+            token,
+            email: user.email,
+            id: user._id,
+            role: roles.user,
+            name: user.name,
+            surname: user.surname
+            //, self: "api/v1/users/" + user._id
         });
     } catch (err) {
         next(err)

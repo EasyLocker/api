@@ -30,7 +30,7 @@ router.post('/', async function(req, res) {
     let user = await User.findOne({ email: req.body.email }).exec()
     if (!user){
         res.status(400);
-        res.json({ message:'User not found' });
+        res.json({ message:'Email or password not correct' });
         return;
     }
     let dbPassword = user.password;
@@ -41,7 +41,7 @@ router.post('/', async function(req, res) {
 
     if (!(await bcrypt.compare(req.body.password, dbPassword))){
         res.status(400);
-        res.json({ message:'Wrong password' });
+        res.json({ message:'Email or password not correct' });
         return;
     }
 
@@ -52,7 +52,14 @@ router.post('/', async function(req, res) {
 
     let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
-    res.json({ id: user._id, token, email: user.email, role: roles.user //, self: "api/v1/users/" + user._id
+    res.json({
+        id: user._id,
+        token,
+        email: user.email,
+        role: roles.user,
+        name: user.name,
+        surname: user.surname
+        //, self: "api/v1/users/" + user._id
     });
 });
 
