@@ -12,9 +12,12 @@ const jwt = require("jsonwebtoken");
  * @openapi
  * /api/v1/users/register:
  *   post:
+ *     responses:
+ *       '200':
+ *         description: 'OK'
  *     tags:
  *     - Users
- *     summary: User registration (creation of a user in the mongodb)
+ *     summary: Register a new user
  *     requestBody:
  *       require: true
  *       content:

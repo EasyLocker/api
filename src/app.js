@@ -4,6 +4,7 @@ const logger = require('morgan');
 const configureSwagger = require('./config/swaggerConfig');
 const cors = require("cors");
 
+const lockersRouter = require('./routes/lockers');
 const usersRouter = require('./routes/users');
 const authenticationRouter = require('./routes/authentication');
 
@@ -25,6 +26,7 @@ configureSwagger(app);
 
 app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/authenticate', authenticationRouter); //lo mettiamo sotto /api/v1/users/u?
+app.use('/api/v1/lockers', lockersRouter);
 
 // any path after token checker will require a valid token
 //app.use(tokenChecker);
