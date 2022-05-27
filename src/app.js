@@ -12,8 +12,12 @@ const {log} = require("debug");
 
 const app = express();
 
+const originUrls = process.env.ORIGIN_ENV === 'production'
+    ? ['https://easylocker.herokuapp.com']
+    : ['http://localhost:3000', 'https://easylocker-staging.herokuapp.com'];
+
 app.use(cors({
-  origin: ['http://localhost:3000']
+  origin: originUrls
 }))
 app.use(logger('dev'));
 app.use(express.json());
