@@ -7,41 +7,45 @@ function checks ({ name, latitude, longitude, width, height, depth }, res) {
     if(!name){
         res.status(400);
         res.json({message: 'Missing name'});
-        return;
+        return 0;
     }
 
     if(!latitude){
         res.status(400);
         res.json({message: 'Missing latitude'});
-        return;
+        return 0;
     }
 
     if(!longitude){
         res.status(400);
         res.json({message: 'Missing longitude'});
-        return;
+        return 0;
     }
 
     if(!width){
         res.status(400);
         res.json({message: 'Missing width'});
-        return;
+        return 0;
     }
 
     if(!height){
         res.status(400);
         res.json({message: 'Missing height'});
-        return;
+        return 0;
     }
 
     if(!depth){
         res.status(400);
         res.json({message: 'Missing depth'});
-        return;
+        return 0;
     }
+
+    return 1;
 }
 router.post('/', async (req, res, next) => {
-    checks(req.body, res);
+    if(!checks(req.body, res)){
+        return;
+    }
 
     const { name,
         latitude,
@@ -68,7 +72,16 @@ router.get('/', async(req, res, next) => {
 });
 
 router.put('/', async (req, res, next) => {
-    checks(req.body, res);
+
+    if(!checks(req.body, res)){
+        return;
+    }
+
+    if(!req.body.id){
+        res.status(400);
+        res.json({message: 'Missing id'});
+        return;
+    }
 
     const { id,
         name,
@@ -90,6 +103,12 @@ router.put('/', async (req, res, next) => {
 });
 
 router.delete('/', async (req, res, next) => {
+    if(!req.body.id){
+        res.status(400);
+        res.json({message: 'Missing id'});
+        return;
+    }
+
     let locker = await Locker.findOne({ _id: req.body.id }).exec();
 
     let del = await Locker.deleteOne(locker);
