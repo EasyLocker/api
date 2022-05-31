@@ -14,6 +14,10 @@ const swaggerOptions = {
 
 const openapiSpecification = swaggerJsdoc(swaggerOptions);
 
+const fs = require('fs');
+
+fs.writeFileSync("apiaryJson", JSON.stringify(openapiSpecification));
+
 const configureSwagger = (app) => {
     app.use('/api-docs', swaggerUi.serve);
     app.get('/api-docs', swaggerUi.setup(openapiSpecification));

@@ -10,20 +10,23 @@ const roles = require('../config/roles');
  * paths:
  *   /api/v1/authenticate:
  *     post:
- *       tags:
+ *      responses:
+ *       '200':
+ *         description: 'OK'
+ *      tags:
  *       - Users
- *       summary: User authentication (login)
- *       requestBody:
- *         require: true
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 email:
- *                   type: string
- *                 password:
- *                   type: string
+ *      summary: Authenticate user
+ *      requestBody:
+ *        require: true
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                email:
+ *                  type: string
+ *                password:
+ *                  type: string
  */
 //authentication
 router.post('/', async function(req, res) {
