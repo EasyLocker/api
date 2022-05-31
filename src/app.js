@@ -31,29 +31,6 @@ app.use('/api/v1/lockers', lockersRouter);
 // any path after token checker will require a valid token
 //app.use(tokenChecker);
 
-/*
-app.use(logErrors);
-app.use(clientErrorHandler);
-app.use(errorHandler);
-
-function logErrors(err, req, res, next) {
-  console.error(err.stack);
-  next(err);
-}
-
-function clientErrorHandler(err, req, res, next) {
-  if (req.xhr) {
-    res.status(500).send({ error: 'Something failed!' });
-  } else {
-    next(err);
-  }
-}
-
-function errorHandler(err, req, res, next) {
-  res.status(500);
-  res.render('error', { error: err });
-}*/
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   res.status(404);

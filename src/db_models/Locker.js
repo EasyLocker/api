@@ -7,6 +7,7 @@ const lockerSchema = new db.Schema({
     width: Number,
     height: Number,
     depth: Number,
+    userId: db.Schema.Types.ObjectId
 });
 
 module.exports = db.model('Lockers', lockerSchema);
