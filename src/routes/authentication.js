@@ -49,9 +49,9 @@ router.post('/', async function(req, res) {
     }
 
     // user authenticated -> create a token
-    let payload = { email: user.email, id: user._id}
+    let payload = { email: user.email, id: user._id, role: user.role};
 
-    let options = { expiresIn: 3600 } // expires in 24 hours
+    let options = { expiresIn: 3600 }; // expires in 24 hours
 
     let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 

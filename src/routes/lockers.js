@@ -4,7 +4,7 @@ const User = require('../db_models/User');
 const router = express.Router();
 
 function checkField(field, msgString, res) {
-    if(!field){
+    if (!field) {
         res.status(400);
         res.json({message: msgString});
         return true;
@@ -13,7 +13,7 @@ function checkField(field, msgString, res) {
     return false;
 }
 
-function checks ({ name, latitude, longitude, width, height, depth }, res) {
+function checks({name, latitude, longitude, width, height, depth}, res) {
     if (checkField(name, 'Missing name', res)) return false;
     if (checkField(latitude, 'Missing latitude', res)) return false;
     if (checkField(longitude, 'Missing longitude', res)) return false;
@@ -59,20 +59,21 @@ function checks ({ name, latitude, longitude, width, height, depth }, res) {
  *
  */
 router.post('/', async (req, res, next) => {
-    if(!checks(req.body, res)){
+    if (!checks(req.body, res)) {
         return;
     }
 
-    const { name,
+    const {
+        name,
         latitude,
         longitude,
         width,
         height,
-        depth,
-        userId} = req.body;
+        depth
+    } = req.body;
 
     //console.log(req.body);
-    const locker = new Locker({name, latitude, longitude, width, height, depth, userId});
+    const locker = new Locker({name, latitude, longitude, width, height, depth});
 
     locker.save();
     res.send();
@@ -96,13 +97,26 @@ router.post('/', async (req, res, next) => {
  *           required: false
  *           description: Name of the locker the user is looking for
  */
-router.get('/', async(req, res, next) => {
+router.get('/', async (req, res, next) => {
     const regex = new RegExp(req.query.name, 'i')
-    let locker = await Locker.find(
-        { name: {$regex: regex}}
+    let lockers = await Locker.find(
+        {name: {$regex: regex}}
     )
 
-    res.json(locker);
+    const response = lockers.map(l => ({
+            id: l._id,
+            name: l.name,
+            latitude: l.latitude,
+            longitude: l.longitude,
+            width: l.width,
+            height: l.height,
+            depth: l.depth,
+            bookedByMe: false,//l.userId === req.loggedUser.id,
+            bookedByOthers: false//l.userId && l.userId !== req.loggedUser.id,
+        })
+    )
+
+    res.json(response);
 });
 
 /**
@@ -142,28 +156,29 @@ router.get('/', async(req, res, next) => {
  */
 router.put('/', async (req, res, next) => {
 
-    if(!checks(req.body, res)){
+    if (!checks(req.body, res)) {
         return;
     }
 
-    if(!req.body.id){
+    if (!req.body.id) {
         res.status(400);
         res.json({message: 'Missing id'});
         return;
     }
 
-    const { id,
+    const {
+        id,
         name,
         latitude,
         longitude,
         width,
         height,
-        depth,
-        userId } = req.body;
+        depth
+    } = req.body;
 
-    let locker = await Locker.replaceOne({ _id: id }, { name, latitude, longitude, width, height, depth, userId });
+    let locker = await Locker.replaceOne({_id: id}, {name, latitude, longitude, width, height, depth});
 
-    if (!locker.modifiedCount){
+    if (!locker.modifiedCount) {
         res.status(400);
         res.json({message: 'Locker does not exists'});
         return;
@@ -191,17 +206,17 @@ router.put('/', async (req, res, next) => {
  *           description: Id of the locker which has to be deleted
  */
 router.delete('/', async (req, res, next) => {
-    if(!req.body.id){
+    if (!req.body.id) {
         res.status(400);
         res.json({message: 'Missing id'});
         return;
     }
 
-    let locker = await Locker.findOne({ _id: req.body.id }).exec();
+    let locker = await Locker.findOne({_id: req.body.id}).exec();
 
     let del = await Locker.deleteOne(locker);
 
-    if (!del.deletedCount){
+    if (!del.deletedCount) {
         res.status(400);
         res.json({message: 'Locker does not exists'});
         return;
@@ -212,7 +227,7 @@ router.delete('/', async (req, res, next) => {
 
 /**
  * @openapi
- * /api/v1/lockers:
+ * /api/v1/lockers/book:
  *   patch:
  *     responses:
  *       '200':
@@ -233,42 +248,73 @@ router.delete('/', async (req, res, next) => {
  *                 type: string
  *
  */
-router.patch('/', async (req, res, next) => {
-    if(!req.body.id){
+router.patch('/book', async (req, res, next) => {
+    if (!req.body.id) {
         res.status(400);
-        res.json({message: 'Missing id'});
+        res.json({message: 'Missing Locker id'});
         return;
     }
 
-    if(!req.body.userId){
+    if (!req.body.userId) {
         res.status(400);
         res.json({message: 'Missing userId'});
         return;
     }
 
-    const {id,
-        userId } = req.body;
+    const {
+        id,
+        userId
+    } = req.body;
 
 
     let locker;
-    try{
-        locker = await Locker.findOne({ _id: id });
-    }catch{
+    try {
+        locker = await Locker.findOne({_id: id});
+    } catch {
         res.status(400);
         res.json({message: 'Could not find the locker'});
         return;
     }
 
     let user;
-    try{
-        user = await User.findOne({ _id: userId });
-    }catch{
+    try {
+        user = await User.findOne({_id: userId});
+    } catch {
         res.status(400);
         res.json({message: 'User does not exists'});
         return;
     }
 
     locker.userId = userId;
+    locker.save();
+
+    res.send();
+
+});
+
+router.patch('/unbook', async (req, res, next) => {
+    if (!req.body.id) {
+        res.status(400);
+        res.json({message: 'Missing Locker id'});
+        return;
+    }
+
+    const {
+        id
+    } = req.body;
+
+
+    let locker;
+    try {
+        locker = await Locker.findOne({_id: id});
+    } catch {
+        res.status(400);
+        res.json({message: 'Could not find the locker'});
+        return;
+    }
+
+
+    locker.userId = "";
     locker.save();
 
     res.send();
