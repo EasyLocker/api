@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "jest --setupFiles dotenv/config"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
@@ -22,7 +23,16 @@
     "swagger-jsdoc": "^6.2.1",
     "swagger-ui-express": "^4.4.0"
   },
+  "devDependencies": {
+    "jest": "^28.1.0",
+    "supertest": "^6.2.3"
+  },
   "engines": {
-    "node": "18.x"
+    "node": "17.x"
+  },
+  "jest": {
+    "verbose": true,
+    "collectCoverage": true,
+    "setupFiles": ["dotenv/config"]
   }
 }
