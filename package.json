@@ -31,6 +31,8 @@
     "node": "17.x"
   },
   "jest": {
+    "verbose": true,
+    "collectCoverage": true,
     "setupFiles": ["dotenv/config"]
   }
 }
