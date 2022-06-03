@@ -28,7 +28,7 @@
     "supertest": "^6.2.3"
   },
   "engines": {
-    "node": "17.x"
+    "node": ">=17.x"
   },
   "jest": {
     "verbose": true,

@@ -111,8 +111,8 @@ router.get('/', async (req, res, next) => {
             width: l.width,
             height: l.height,
             depth: l.depth,
-            bookedByMe: false,//l.userId === req.loggedUser.id,
-            bookedByOthers: false//l.userId && l.userId !== req.loggedUser.id,
+            bookedByMe: l.userId === req.loggedUser.id,
+            bookedByOthers: l.userId && l.userId !== req.loggedUser.id,
         })
     )
 
@@ -292,7 +292,7 @@ router.patch('/book', async (req, res, next) => {
 
 });
 
-router.patch('/unbook', async (req, res, next) => {
+router.patch('/cancel', async (req, res, next) => {
     if (!req.body.id) {
         res.status(400);
         res.json({message: 'Missing Locker id'});
