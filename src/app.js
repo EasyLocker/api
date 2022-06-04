@@ -5,7 +5,7 @@ const configureSwagger = require('./config/swaggerConfig');
 const cors = require("cors");
 
 const lockersRouter = require('./routes/lockers');
-const usersRouter = require('./routes/users');
+const usersRouter = require('./routes/users-registration');
 const authenticationRouter = require('./routes/authentication');
 
 const tokenChecker = require('./config/tokenChecker');
@@ -29,9 +29,9 @@ configureSwagger(app);
 
 // ------------------ Routes ------------------
 app.use('/api/v1/authenticate', authenticationRouter);
+app.use('/api/v1/users', usersRouter);
 
 app.use(tokenChecker);
-app.use('/api/v1/users', usersRouter);
 app.use('/api/v1/lockers', lockersRouter);
 
 

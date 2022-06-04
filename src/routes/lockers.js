@@ -112,7 +112,7 @@ router.get('/', async (req, res, next) => {
             height: l.height,
             depth: l.depth,
             bookedByMe: l.userId === req.loggedUser.id,
-            bookedByOthers: l.userId && l.userId !== req.loggedUser.id,
+            bookedByOthers: l.userId !== undefined && l.userId !== req.loggedUser.id,
         })
     )
 

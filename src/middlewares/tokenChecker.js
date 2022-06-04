@@ -6,14 +6,14 @@ const tokenChecker = function (req, res, next) {
     const token = req.headers['authorization']?.replace('Bearer ', '');
 
     if (!token){
-        res.status(401).json({message: 'No token provided.'});
+        res.status(401).send();
         return;
     }
 
     // decode token, verifies secret and checks expiration
     jwt.verify(token, process.env.SUPER_SECRET, function (err, decoded) {
         if (err){
-            res.status(403).json({message: 'Token not valid'});
+            res.status(401).send();
             console.log(err);
         } else {
 

@@ -4,12 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f61bca4c-0ce9-4ee2-a725-bcf059527df4" name="Changes" comment="Files refactor and db integration in 'app.js'">
+    <list default="true" id="f61bca4c-0ce9-4ee2-a725-bcf059527df4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/middlewares/requireRole.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config/tokenChecker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/config/tokenChecker.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/authentication.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/authentication.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config/tokenChecker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/middlewares/tokenChecker.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/routes/lockers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/lockers.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/users-registration.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,9 +40,20 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "nodejs.jest.jest_package": "/home/gas/EasyLocker/Apiv1/node_modules/jest"
+    "WebServerToolWindowFactoryState": "false",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs.jest.jest_package": "/home/gas/EasyLocker/Apiv1/node_modules/jest",
+    "nodejs_package_manager_path": "yarn",
+    "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/middlewares" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
       <package-json value="$PROJECT_DIR$/package.json" />
@@ -71,6 +83,7 @@
       <workItem from="1654095857263" duration="19000" />
       <workItem from="1654095889986" duration="4901000" />
       <workItem from="1654180673970" duration="5537000" />
+      <workItem from="1654333282002" duration="347000" />
     </task>
     <servers />
   </component>
