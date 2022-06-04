@@ -17,6 +17,7 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "jsonwebtoken": "^8.5.1",
+    "mongodb-memory-server": "^8.6.0",
     "mongoose": "^6.3.3",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.16",
@@ -33,6 +34,8 @@
   "jest": {
     "verbose": true,
     "collectCoverage": true,
-    "setupFiles": ["dotenv/config"]
+    "setupFiles": [
+      "dotenv/config"
+    ]
   }
 }

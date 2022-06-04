@@ -96,6 +96,7 @@ router.post('/register', async (req, res, next) => {
             surname: user.surname
             //, self: "api/v1/users/" + user._id
         });
+
     } catch (err) {
         next(err)
         // console.log(err);

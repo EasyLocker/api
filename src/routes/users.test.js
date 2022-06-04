@@ -35,7 +35,7 @@ describe('Route /api/v1/users', () => {
         mocks.forEach(mock => mock.mockRestore());
     });
 
-    test('POST /api/v1/users/register should return a token', async () => {
+    it('should create a user and return a token', async () => {
         await request(app)
             .post('/api/v1/users/register')
             .send({
