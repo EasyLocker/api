@@ -8,7 +8,7 @@ const lockersRouter = require('./routes/lockers');
 const usersRouter = require('./routes/users-registration');
 const authenticationRouter = require('./routes/authentication');
 
-const tokenChecker = require('./config/tokenChecker');
+const tokenChecker = require('./middlewares/tokenChecker');
 const {log} = require("debug");
 
 const app = express();
