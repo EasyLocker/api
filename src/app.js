@@ -4,12 +4,7 @@ const logger = require('morgan');
 const configureSwagger = require('./config/swaggerConfig');
 const cors = require("cors");
 
-const lockersRouter = require('./routes/lockers');
-const usersRouter = require('./routes/users-registration');
-const authenticationRouter = require('./routes/authentication');
-
-const tokenChecker = require('./middlewares/tokenChecker');
-const {log} = require("debug");
+const routes = require('./routes/index');
 
 const app = express();
 
@@ -23,17 +18,11 @@ app.use(cors({
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use('/api', routes);
+
 app.use(express.static(path.join(__dirname, '..', 'public')));
 configureSwagger(app);
-
-
-// ------------------ Routes ------------------
-app.use('/api/v1/authenticate', authenticationRouter);
-app.use('/api/v1/users', usersRouter);
-
-app.use(tokenChecker);
-app.use('/api/v1/lockers', lockersRouter);
-
 
 // catch 404 and forward to error handler)
 app.use(function(req, res, next) {

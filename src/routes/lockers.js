@@ -1,10 +1,18 @@
 const express = require('express');
+const router = express.Router();
 const Locker = require('../db_models/Locker');
 const User = require('../db_models/User');
-const router = express.Router();
 
-function checkField(field, msgString, res) {
+
+function handleError(res, msg = null) {
+    if (!msg) msg = "C'è stato un errore inaspettato. Stiamo lavorando per risolvere il problema.";
+    res.status(msg ? 400 : 500);
+    res.json({message: msg});
+}
+
+function fieldIsEmpty(field, msgString, res) {
     if (!field) {
+        handleError(res, msgString);
         res.status(400);
         res.json({message: msgString});
         return true;
@@ -14,15 +22,12 @@ function checkField(field, msgString, res) {
 }
 
 function checks({name, latitude, longitude, width, height, depth}, res) {
-    if (checkField(name, 'Missing name', res)) return false;
-    if (checkField(latitude, 'Missing latitude', res)) return false;
-    if (checkField(longitude, 'Missing longitude', res)) return false;
-    if (checkField(width, 'Missing width', res)) return false;
-    if (checkField(height, 'Missing height', res)) return false;
-    if (checkField(depth, 'Missing depth', res)) return false;
-
-
-    return true;
+    return fieldIsEmpty(name, 'Missing name', res)
+        || fieldIsEmpty(latitude, 'Missing latitude', res)
+        || fieldIsEmpty(longitude, 'Missing longitude', res)
+        || fieldIsEmpty(width, 'Missing width', res)
+        || fieldIsEmpty(height, 'Missing height', res)
+        || fieldIsEmpty(depth, 'Missing depth', res);
 }
 
 /**
@@ -59,24 +64,25 @@ function checks({name, latitude, longitude, width, height, depth}, res) {
  *
  */
 router.post('/', async (req, res, next) => {
-    if (!checks(req.body, res)) {
-        return;
+    try {
+        if (checks(req.body, res)) return;
+
+        const {
+            name,
+            latitude,
+            longitude,
+            width,
+            height,
+            depth
+        } = req.body;
+
+        const locker = new Locker({name, latitude, longitude, width, height, depth});
+
+        locker.save();
+        res.send();
+    } catch (e) {
+        handleError(res);
     }
-
-    const {
-        name,
-        latitude,
-        longitude,
-        width,
-        height,
-        depth
-    } = req.body;
-
-    //console.log(req.body);
-    const locker = new Locker({name, latitude, longitude, width, height, depth});
-
-    locker.save();
-    res.send();
 });
 
 /**
@@ -88,7 +94,7 @@ router.post('/', async (req, res, next) => {
  *         description: 'OK'
  *     tags:
  *     - Lockers
- *     summary: Search a locker
+ *     summary: Search an available locker (only available lockers are returned, booked ones are skipped).
  *     parameters:
  *         - in: query
  *           name: name
@@ -100,23 +106,29 @@ router.post('/', async (req, res, next) => {
 router.get('/', async (req, res, next) => {
     const regex = new RegExp(req.query.name, 'i')
     let lockers = await Locker.find(
-        {name: {$regex: regex}}
+        {name: {$regex: regex}, userId: {$ne: req.loggedUser.id}}
     )
 
-    const response = lockers.map(l => ({
-            id: l._id,
-            name: l.name,
-            latitude: l.latitude,
-            longitude: l.longitude,
-            width: l.width,
-            height: l.height,
-            depth: l.depth,
-            bookedByMe: l.userId === req.loggedUser.id,
-            bookedByOthers: l.userId !== undefined && l.userId !== req.loggedUser.id,
-        })
+    res.json(mapLockersToDto(lockers, true));
+});
+
+/**
+ * @openapi
+ * /api/v1/lockers/booked:
+ *   get:
+ *     responses:
+ *       '200':
+ *         description: 'OK'
+ *     tags:
+ *     - Lockers
+ *     summary: Get all locker booked by logged user.
+ */
+router.get('/booked', async (req, res, next) => {
+    let lockers = await Locker.find(
+        {userId: {$eq: req.loggedUser.id}}
     )
 
-    res.json(response);
+    res.json(mapLockersToDto(lockers));
 });
 
 /**
@@ -155,14 +167,12 @@ router.get('/', async (req, res, next) => {
  *
  */
 router.put('/', async (req, res, next) => {
-
     if (!checks(req.body, res)) {
         return;
     }
 
     if (!req.body.id) {
-        res.status(400);
-        res.json({message: 'Missing id'});
+        handleError(res, 'Missing Locker id');
         return;
     }
 
@@ -178,11 +188,7 @@ router.put('/', async (req, res, next) => {
 
     let locker = await Locker.replaceOne({_id: id}, {name, latitude, longitude, width, height, depth});
 
-    if (!locker.modifiedCount) {
-        res.status(400);
-        res.json({message: 'Locker does not exists'});
-        return;
-    }
+    if (fieldIsEmpty(locker.modifiedCount, 'Locker does not exists', res)) return;
 
     res.json(locker);
 });
@@ -206,21 +212,13 @@ router.put('/', async (req, res, next) => {
  *           description: Id of the locker which has to be deleted
  */
 router.delete('/', async (req, res, next) => {
-    if (!req.body.id) {
-        res.status(400);
-        res.json({message: 'Missing id'});
-        return;
-    }
+    if (fieldIsEmpty(req.body.id, 'Missing Locker id', res)) return;
 
     let locker = await Locker.findOne({_id: req.body.id}).exec();
 
     let del = await Locker.deleteOne(locker);
 
-    if (!del.deletedCount) {
-        res.status(400);
-        res.json({message: 'Locker does not exists'});
-        return;
-    }
+    if (fieldIsEmpty(del.deletedCount, 'Locker does not exists', res)) return;
 
     res.sendStatus(200);
 });
@@ -234,7 +232,7 @@ router.delete('/', async (req, res, next) => {
  *         description: 'OK'
  *     tags:
  *     - Lockers
- *     summary: Modify the user that has booked the locker
+ *     summary: Book a locker by id for logged user
  *     requestBody:
  *       require: true
  *       content:
@@ -244,80 +242,98 @@ router.delete('/', async (req, res, next) => {
  *             properties:
  *               id:
  *                 type: string
- *               userId:
- *                 type: string
  *
  */
 router.patch('/book', async (req, res, next) => {
-    if (!req.body.id) {
-        res.status(400);
-        res.json({message: 'Missing Locker id'});
+    const {id} = req.body;
+
+    if (!id) {
+        handleError(res, 'Missing Locker id');
         return;
     }
-
-    if (!req.body.userId) {
-        res.status(400);
-        res.json({message: 'Missing userId'});
-        return;
-    }
-
-    const {
-        id,
-        userId
-    } = req.body;
-
 
     let locker;
     try {
         locker = await Locker.findOne({_id: id});
     } catch {
-        res.status(400);
-        res.json({message: 'Could not find the locker'});
-        return;
     }
+    if (fieldIsEmpty(locker, 'Locker does not exists', res)) return;
 
-    let user;
-    try {
-        user = await User.findOne({_id: userId});
-    } catch {
-        res.status(400);
-        res.json({message: 'User does not exists'});
-        return;
-    }
-
-    locker.userId = userId;
+    locker.userId = req.loggedUser.id;
     locker.save();
 
-    res.send();
-
+    res.sendStatus(200);
 });
 
+/**
+ * @openapi
+ * /api/v1/lockers/cancel:
+ *   patch:
+ *     responses:
+ *       '200':
+ *         description: 'OK'
+ *     tags:
+ *     - Lockers
+ *     summary: Cancel the booking of the locker for logged user
+ *     requestBody:
+ *       require: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id:
+ *                 type: string
+ *
+ */
 router.patch('/cancel', async (req, res, next) => {
-    if (!req.body.id) {
-        res.status(400);
-        res.json({message: 'Missing Locker id'});
-        return;
-    }
-
-    const {
-        id
-    } = req.body;
-
-
-    let locker;
     try {
-        locker = await Locker.findOne({_id: id});
+        const {id} = req.body;
+
+        if (!id) {
+            handleError(res, 'Missing Locker id');
+            return;
+        }
+
+        let locker;
+        locker = await Locker.findOne({_id: id, userId: req.loggedUser.id});
+
+        if (!locker) {
+            handleError(res, 'Could not find the locker')
+            return;
+        }
+
+        locker.userId = undefined;
+        locker.save();
+
+        res.send();
+
     } catch {
-        res.status(400);
-        res.json({message: 'Could not find the locker'});
-        return;
+        handleError(res);
     }
-
-
-    locker.userId = "";
-    locker.save();
-
-    res.send();
-
 });
+
+
+function mapLockersToDto(lockers, addNotAvailable = false) {
+    return lockers.map(l => {
+            const res = {
+                id: l._id,
+                name: l.name,
+                latitude: l.latitude,
+                longitude: l.longitude,
+                width: l.width,
+                height: l.height,
+                depth: l.depth,
+            }
+
+            if (addNotAvailable) {
+                res.notAvailable = l.userId !== undefined && l.userId !== req.loggedUser.id;
+            }
+
+            return res;
+        }
+    )
+}
+
+
 module.exports = router;

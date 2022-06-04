@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f61bca4c-0ce9-4ee2-a725-bcf059527df4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/middlewares/requireRole.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/routes/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apiaryJson" beforeDir="false" afterPath="$PROJECT_DIR$/apiaryJson" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config/tokenChecker.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/middlewares/tokenChecker.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/routes/lockers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/lockers.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/routes/users.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/routes/users-registration.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +82,7 @@
       <workItem from="1654095857263" duration="19000" />
       <workItem from="1654095889986" duration="4901000" />
       <workItem from="1654180673970" duration="5537000" />
-      <workItem from="1654333282002" duration="347000" />
+      <workItem from="1654333282002" duration="7602000" />
     </task>
     <servers />
   </component>
