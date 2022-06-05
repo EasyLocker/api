@@ -65,6 +65,7 @@ function checks({name, latitude, longitude, width, height, depth}, res) {
  */
 router.post('/', async (req, res, next) => {
     try {
+        //console.log(req.loggedUser, req.body)
         if (checks(req.body, res)) return;
 
         const {
@@ -79,7 +80,14 @@ router.post('/', async (req, res, next) => {
         const locker = new Locker({name, latitude, longitude, width, height, depth});
 
         locker.save();
-        res.send();
+        res.json({
+            name,
+            latitude,
+            longitude,
+            width,
+            height,
+            depth
+        });
     } catch (e) {
         handleError(res);
     }
@@ -105,11 +113,12 @@ router.post('/', async (req, res, next) => {
  */
 router.get('/', async (req, res, next) => {
     const regex = new RegExp(req.query.name, 'i')
+    //console.log(req);
     let lockers = await Locker.find(
         {name: {$regex: regex}, userId: {$ne: req.loggedUser.id}}
     )
 
-    res.json(mapLockersToDto(lockers, true));
+    res.json(mapLockersToDto(req, lockers, true));
 });
 
 /**
@@ -124,11 +133,14 @@ router.get('/', async (req, res, next) => {
  *     summary: Get all locker booked by logged user.
  */
 router.get('/booked', async (req, res, next) => {
-    let lockers = await Locker.find(
-        {userId: {$eq: req.loggedUser.id}}
-    )
+    const user = req.loggedUser.id;
 
-    res.json(mapLockersToDto(lockers));
+    let lockers = await Locker.find(
+        {userId: {$eq: user}}
+    );
+
+    let locker = mapLockersToDto(req, lockers);
+    res.json(locker);
 });
 
 /**
@@ -314,9 +326,9 @@ router.patch('/cancel', async (req, res, next) => {
 });
 
 
-function mapLockersToDto(lockers, addNotAvailable = false) {
+function mapLockersToDto(req, lockers, addNotAvailable = false) {
     return lockers.map(l => {
-            const res = {
+            const dto = {
                 id: l._id,
                 name: l.name,
                 latitude: l.latitude,
@@ -324,13 +336,14 @@ function mapLockersToDto(lockers, addNotAvailable = false) {
                 width: l.width,
                 height: l.height,
                 depth: l.depth,
+                userId: l.userId
             }
 
             if (addNotAvailable) {
-                res.notAvailable = l.userId !== undefined && l.userId !== req.loggedUser.id;
+                dto.notAvailable = l.userId !== undefined && l.userId !== req.loggedUser.id;
             }
 
-            return res;
+            return dto;
         }
     )
 }

@@ -2,9 +2,10 @@ const jwt = require('jsonwebtoken');
 
 //check if there is a valid token
 const tokenChecker = function (req, res, next) {
+    // console.log('verify token')
     // Retrieve token from header
     const token = req.headers['authorization']?.replace('Bearer ', '');
-
+    // console.log("Token in checker " + token)
     if (!token){
         res.status(401).send();
         return;
@@ -19,7 +20,6 @@ const tokenChecker = function (req, res, next) {
 
             // if everything is good, save in req object for use in other routes
             req.loggedUser = decoded;
-            //console.log(decoded);
             next();
         }
     });
