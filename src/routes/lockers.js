@@ -276,6 +276,7 @@ router.patch('/book', async (req, res, next) => {
     if (fieldIsEmpty(locker, 'Locker does not exists', res)) return;
 
     locker.userId = req.loggedUser.id;
+    locker.bookedAt = new Date();
     locker.save();
 
     res.sendStatus(200);
@@ -320,6 +321,7 @@ router.patch('/cancel', async (req, res, next) => {
         }
 
         locker.userId = undefined;
+        locker.bookedAt = undefined;
         locker.save();
 
         res.send();
