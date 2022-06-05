@@ -275,8 +275,17 @@ router.patch('/book', async (req, res, next) => {
     }
     if (fieldIsEmpty(locker, 'Locker does not exists', res)) return;
 
+    date = new Date();
+    let day = String(date.getDate()).padStart(2, '0');
+    let month = String(date.getMonth() + 1).padStart(2, '0');
+    let year = date.getFullYear();
+    let hour = date.getHours();
+    let minutes = date.getMinutes();
+    let seconds = date.getSeconds();
+
     locker.userId = req.loggedUser.id;
-    locker.bookedAt = new Date();
+    locker.bookedAt = year + "-" + month + "-" + day + " Alle ore " + hour + ":" + minutes + ":" + seconds;
+    console.log(locker.bookedAt);
     locker.save();
 
     res.sendStatus(200);
@@ -342,7 +351,8 @@ function mapLockersToDto(req, lockers, addNotAvailable = false) {
                 width: l.width,
                 height: l.height,
                 depth: l.depth,
-                userId: l.userId
+                userId: l.userId,
+                bookedAt: l.bookedAt
             }
 
             if (addNotAvailable) {
