@@ -3,7 +3,6 @@ const authenticationRouter = require("./authentication");
 const usersRouter = require("./users-registration");
 const tokenChecker = require("../middlewares/tokenChecker");
 const lockersRouter = require("./lockers");
-
 const router = express.Router();
 
 router.get('/*', function(req, res, next){

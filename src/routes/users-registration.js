@@ -2,7 +2,6 @@ const express = require('express');
 const User = require('../db_models/User');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const {log} = require("debug");
 const {isEmailValid} = require("../utils/strings_utils");
 const saltRounds = 10;
 const roles = require('../config/roles');
