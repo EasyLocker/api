@@ -12,25 +12,22 @@ const bcrypt = require("bcrypt");
 
 
 let token;
+let lockerGetPutDelete;
+let lockerToBook;
+let lockerToCancel;
 
-//Mocks
 describe('Route api/v1/lockers', () => {
-    let lockerSpy;
 
     beforeAll(async () => {
         await connectDB();
 
         let user = new User({
-            id: '5c9f8f8f8f8f8f8f8f8f8f8',
             email: 'correct@email.it',
             password: await bcrypt.hash('correctPassword', 10), // 10 = salt rounds
         });
 
 
         user.save();
-        // console.log(user);
-        // user = await User.find({email: 'correct@gmail.it'});
-        // console.log(user);
 
         const login = await request.post('/api/v1/authenticate')
             .send({
@@ -40,26 +37,10 @@ describe('Route api/v1/lockers', () => {
 
         token = login.body.token;
 
-
-        let locker2 = new Locker(
-            {
-                userId: '6290daa478b876fa28581b97',
-                name: 'testLocker2',
-                latitude: 1,
-                longitude: 1,
-                width: 1,
-                height: 1,
-                depth: 1,
-                notAvailable: false,
-            });
-
-        locker2.save();
-
-        // console.log(user.id);
-        let locker3 = new Locker(
+        lockerGetPutDelete = new Locker(
             {
                 userId: user.id,
-                name: 'testLocker3',
+                name: 'testLockerGetPut',
                 latitude: 1,
                 longitude: 1,
                 width: 1,
@@ -68,31 +49,57 @@ describe('Route api/v1/lockers', () => {
                 notAvailable: false,
             });
 
-        locker3.save();
+        lockerGetPutDelete.save();
+
+        lockerToBook = new Locker(
+            {
+                name: 'testLockerToBook',
+                latitude: 1,
+                longitude: 1,
+                width: 1,
+                height: 1,
+                depth: 1,
+                notAvailable: false,
+            });
+
+        lockerToBook.save();
+
+        lockerToCancel = new Locker(
+            {
+                userId: user.id,
+                name: 'testLockerToUnbook',
+                latitude: 1,
+                longitude: 1,
+                width: 1,
+                height: 1,
+                depth: 1,
+                notAvailable: false,
+            });
+
+        lockerToCancel.save();
     });
+
 
     afterAll(async () => {
-        // lockerSpy.mockRestore();
         disconnectDB();
-        //server.close();
     });
 
-    test('GET /api/v1/lockers should respond with the lockers in the database', async () => {
+    it('Should respond with the lockers in the database', async () => {
         let res = await request.get('/api/v1/lockers').set('Authorization', 'Bearer ' + token);
         expect(200);
         expect(typeof res.body).toBe(typeof [{}]);
     });
 
-    test('GET /api/v1/lockers/booked should respond with a locker booked by us', async () => {
+    it('Should respond only with the lockers booked by us', async () => {
         let res = await request.get('/api/v1/lockers/booked').set('Authorization', 'Bearer ' + token);
         expect(200);
         expect(typeof res.body).toBe(typeof [{}]);
     });
 
-    test('POST request: Create a legitimate locker', async () => {
+    it('Should create a legitimate locker', async () => {
         let res = await request.post('/api/v1/lockers').set('Authorization', 'Bearer ' + token)
             .send({
-                name: 'testLocker',
+                name: 'testLockerPost',
                 latitude: 1,
                 longitude: 1,
                 width: 1,
@@ -107,4 +114,53 @@ describe('Route api/v1/lockers', () => {
     })
 
 
+    it('Should modify a locker', async () => {
+        let res = await request.put('/api/v1/lockers').set('Authorization', 'Bearer ' + token)
+            .send({
+                id: lockerGetPutDelete.id,
+                name: 'testLockerGetPutDelete2',
+                latitude: 2,
+                longitude: 1,
+                width: 1,
+                height: 2,
+                depth: 1
+            })
+
+        // console.log(res.body);
+        expect(res.status).toBe(200);
+        expect(res.body).toBeDefined();
+        expect(typeof res.body).toBe(typeof {});
+    })
+
+    it('Should delete a locker', async () => {
+
+        let res = await request.delete('/api/v1/lockers').set('Authorization', 'Bearer ' + token)
+            .send({
+                id: lockerGetPutDelete.id
+            })
+
+        expect(res.status).toBe(200);
+
+    })
+
+    it('Should book a locker', async () => {
+        let res = await request.patch('/api/v1/lockers/book').set('Authorization', 'Bearer ' + token)
+            .send({
+                id: lockerToBook.id
+            })
+
+        expect(res.status).toBe(200);
+
+    })
+
+    it('Should cancel a locker booking', async () => {
+
+        let res = await request.patch('/api/v1/lockers/cancel').set('Authorization', 'Bearer ' + token)
+            .send({
+                id: lockerToCancel.id
+            })
+
+        expect(res.status).toBe(200);
+
+    })
 });

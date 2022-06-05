@@ -80,7 +80,10 @@ router.post('/', async (req, res, next) => {
         const locker = new Locker({name, latitude, longitude, width, height, depth});
 
         locker.save();
+        let id = locker._id;
+
         res.json({
+            id,
             name,
             latitude,
             longitude,
@@ -179,14 +182,15 @@ router.get('/booked', async (req, res, next) => {
  *
  */
 router.put('/', async (req, res, next) => {
-    if (!checks(req.body, res)) {
-        return;
-    }
+    // if (!checks(req.body, res)) {
+    //     return;
+    // }
 
     if (!req.body.id) {
         handleError(res, 'Missing Locker id');
         return;
     }
+
 
     const {
         id,
