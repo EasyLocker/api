@@ -196,6 +196,32 @@ router.get('/booked', async (req, res, next) => {
 
 /**
  * @openapi
+ * /api/v1/lockers/{lockerId}:
+ *   get:
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/response200'
+ *       '400':
+ *         $ref: '#/components/response400'
+ *       '500':
+ *         $ref: '#/components/response500'
+ *     tags:
+ *     - Lockers
+ *     summary: Search a locker by its id
+ */
+router.get('/:lockerId', async (req, res, next) => {
+    const id = req.params.lockerId;
+    console.log(id);
+    let lockers = await Locker.find(
+        {_id: id}
+    )
+
+    res.json(mapLockersToDto(req, lockers, true));
+});
+
+
+/**
+ * @openapi
  * /api/v1/lockers:
  *   put:
  *    responses:
