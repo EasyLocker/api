@@ -105,7 +105,7 @@ router.post('/', async (req, res, next) => {
  *         description: 'OK'
  *     tags:
  *     - Lockers
- *     summary: Search an available locker (only available lockers are returned, booked ones are skipped).
+ *     summary: Search all lockers.
  *     parameters:
  *         - in: query
  *           name: name
@@ -115,6 +115,34 @@ router.post('/', async (req, res, next) => {
  *           description: Name of the locker the user is looking for
  */
 router.get('/', async (req, res, next) => {
+    // TODO: check if logged user is an admin
+    const regex = new RegExp(req.query.name, 'i')
+    let lockers = await Locker.find(
+        {name: {$regex: regex}}
+    )
+
+    res.json(mapLockersToDto(req, lockers, true));
+});
+
+/**
+ * @openapi
+ * /api/v1/lockers:
+ *   get:
+ *     responses:
+ *       '200':
+ *         description: 'OK'
+ *     tags:
+ *     - Lockers
+ *     summary: Search an available locker (only available lockers are returned, booked ones are skipped).
+ *     parameters:
+ *         - in: query
+ *           name: name
+ *           schema:
+ *             type: string
+ *           required: false
+ *           description: Name of the locker the user is looking for
+ */
+router.get('/available', async (req, res, next) => {
     const regex = new RegExp(req.query.name, 'i')
     //console.log(req);
     let lockers = await Locker.find(
@@ -200,19 +228,18 @@ router.get('/:lockerId', async (req, res, next) => {
  *                 type: string
  *
  */
-router.put('/', async (req, res, next) => {
+router.put('/:lockerId', async (req, res, next) => {
     // if (!checks(req.body, res)) {
     //     return;
     // }
 
-    if (!req.body.id) {
+    const id = req.params.lockerId;
+    if (!req.params.lockerId) {
         handleError(res, 'Missing Locker id');
         return;
     }
 
-
     const {
-        id,
         name,
         latitude,
         longitude,
@@ -246,8 +273,8 @@ router.put('/', async (req, res, next) => {
  *           required: true
  *           description: Id of the locker which has to be deleted
  */
-router.delete('/', async (req, res, next) => {
-    if (fieldIsEmpty(req.body.id, 'Missing Locker id', res)) return;
+router.delete('/:lockerId', async (req, res, next) => {
+    if (fieldIsEmpty(req.params.lockerId, 'Missing Locker id', res)) return;
 
     let locker = await Locker.findOne({_id: req.body.id}).exec();
 
