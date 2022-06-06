@@ -12,8 +12,37 @@ const jwt = require("jsonwebtoken");
  * /api/v1/users/register:
  *   post:
  *     responses:
- *       '200':
- *         description: 'OK'
+ *      '200':
+ *         description: User correctly authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: Id of the user in the database
+ *                   example: 6290daa478b876fa28581b97
+ *                 token:
+ *                   type: string
+ *                   description: Token which grants the access to the resources
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+ *                 email:
+ *                   type: email
+ *                   description: Email of the user just registered
+ *                   example: Mariorossi@example.it
+ *                 role:
+ *                   type: string
+ *                   description: Role of the user just registered, it will tipically be 'User'
+ *                   example: User
+ *                 name:
+ *                   type: string
+ *                   description: Name of the user just registered
+ *                   example: Mario
+ *                 surname:
+ *                   type: string
+ *                   description: Surname of the user just registered
+ *                   example: Rossi
  *     tags:
  *     - Users
  *     summary: Register a new user
@@ -26,12 +55,16 @@ const jwt = require("jsonwebtoken");
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Mario
  *               surname:
  *                 type: string
+ *                 example: Rossi
  *               email:
  *                 type: string
+ *                 example: Mariorossi@example.it
  *               password:
  *                 type: string
+ *                 example: Password
  *
  */
 //Create a user
@@ -87,9 +120,9 @@ router.post('/register', async (req, res, next) => {
         let token = jwt.sign(payload, process.env.SUPER_SECRET, options);
 
         res.json({
+            id: user._id,
             token,
             email: user.email,
-            id: user._id,
             role: roles.user,
             name: user.name,
             surname: user.surname
