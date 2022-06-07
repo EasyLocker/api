@@ -36,11 +36,11 @@ function checkIfEmpty({name, latitude, longitude, width, height, depth}, res) {
  *   post:
  *     responses:
  *      '200':
- *        $ref: '#/components/response200'
+ *        $ref: '#/components/responses/code200'
  *      '400':
- *        $ref: '#/components/response400'
+ *        $ref: '#/components/responses/code400'
  *      '500':
- *        $ref: '#/components/response500'
+ *        $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Register a new locker
@@ -109,11 +109,11 @@ router.post('/', async (req, res, next) => {
  *   get:
  *     responses:
  *       '200':
- *          $ref: '#/components/response200'
+ *          $ref: '#/components/responses/code200'
  *       '400':
- *        $ref: '#/components/response400'
+ *          $ref: '#/components/responses/code400'
  *       '500':
- *         $ref: '#/components/response500'
+ *          $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Search an available locker (only available lockers are returned, booked ones are skipped).
@@ -179,6 +179,10 @@ router.get('/', async (req, res, next) => {
  *                   type: string
  *                   description: Paragraph used to show when the locker has been booked
  *                   example: Prenotato il 2022-06-06 alle ore 17:54
+ *       '400':
+ *           $ref: '#/components/responses/code400'
+ *       '500':
+ *           $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Get all locker booked by logged user.
@@ -200,11 +204,11 @@ router.get('/booked', async (req, res, next) => {
  *   get:
  *     responses:
  *       '200':
- *         $ref: '#/components/response200'
+ *         $ref: '#/components/responses/code200'
  *       '400':
- *         $ref: '#/components/response400'
+ *         $ref: '#/components/responses/code400'
  *       '500':
- *         $ref: '#/components/response500'
+ *         $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Search a locker by its id
@@ -226,11 +230,11 @@ router.get('/:lockerId', async (req, res, next) => {
  *   put:
  *    responses:
  *      '200':
- *         $ref: '#/components/response200'
+ *         $ref: '#/components/responses/code200'
  *      '400':
- *         $ref: '#/components/response400'
+ *         $ref: '#/components/responses/code400'
  *      '500':
- *         $ref: '#/components/response500'
+ *         $ref: '#/components/responses/code500'
  *    tags:
  *    - Lockers
  *    summary: Modify a locker

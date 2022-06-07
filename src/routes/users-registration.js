@@ -43,6 +43,10 @@ const jwt = require("jsonwebtoken");
  *                   type: string
  *                   description: Surname of the user just registered
  *                   example: Rossi
+ *      '400':
+ *         $ref: '#/components/responses/code400'
+ *      '500':
+ *         $ref: '#/components/responses/code500'
  *     tags:
  *     - Users
  *     summary: Register a new user

@@ -42,6 +42,10 @@ const roles = require('../config/roles');
  *                   type: string
  *                   description: Cognome dell'utente appena registrato
  *                   example: Rossi
+ *       '400':
+ *         $ref: '#/components/responses/code400'
+ *       '500':
+ *         $ref: '#/components/responses/code500'
  *      tags:
  *       - Users
  *      summary: Authenticate user
