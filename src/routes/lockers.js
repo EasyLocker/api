@@ -292,13 +292,14 @@ router.get('/:lockerId', async (req, res, next) => {
  *                 example: 60
  *
  */
-router.put('/', async (req, res, next) => {
+router.put('/:lockerId', async (req, res, next) => {
+
     if (checkIfEmpty(req.body, res)) {
         return;
     }
 
     const id = req.params.lockerId;
-    if (!req.params.lockerId) {
+    if (!id) {
         handleError(res, 'Missing Locker id');
         return;
     }
@@ -338,9 +339,11 @@ router.put('/', async (req, res, next) => {
  *           description: Id of the locker which has to be deleted
  */
 router.delete('/:lockerId', async (req, res, next) => {
-    if (fieldIsEmpty(req.params.lockerId, 'Missing Locker id', res)) return;
+    const lockerId = req.params.lockerId;
+    console.log(lockerId);
+    if (fieldIsEmpty(lockerId, 'Missing Locker id', res)) return;
 
-    let locker = await Locker.findOne({_id: req.body.id}).exec();
+    let locker = await Locker.findOne({_id: lockerId}).exec();
 
     let del = await Locker.deleteOne(locker);
 
