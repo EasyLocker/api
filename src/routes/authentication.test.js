@@ -50,7 +50,37 @@ describe('Route /api/v1/authenticate', () => {
             .post('/api/v1/authenticate')
             .send({
                 email: 'wrong@email.it',
+                password: 'correctPassword'
+            })
+            .expect(400);
+    });
+
+    test('Authentication with an incorrect password should fail with 400 error code', () => {
+        return request(app)
+            .post('/api/v1/authenticate')
+            .send({
+                email: 'correct@email.it',
                 password: 'wrongPassword'
+            })
+            .expect(400);
+    });
+
+    test('Authentication with an empty email should fail with 400 error code', () => {
+        return request(app)
+            .post('/api/v1/authenticate')
+            .send({
+                email: '',
+                password: 'correctPassword'
+            })
+            .expect(400);
+    });
+
+    test('Authentication with an empty password should fail with 400 error code', () => {
+        return request(app)
+            .post('/api/v1/authenticate')
+            .send({
+                email: 'correct@email.it',
+                password: ''
             })
             .expect(400);
     });
