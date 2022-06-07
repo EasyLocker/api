@@ -43,6 +43,8 @@ function checkIfEmpty({name, latitude, longitude, width, height, depth}, res) {
  *        $ref: '#/components/responses/code400'
  *      '500':
  *        $ref: '#/components/responses/code500'
+ *      '403':
+ *        $ref: '#/components/responses/code403'
  *     tags:
  *     - Lockers
  *     summary: Register a new locker
@@ -116,6 +118,8 @@ router.post('/', requireRole(roles.admin), async (req, res, next) => {
  *          $ref: '#/components/responses/code400'
  *       '500':
  *          $ref: '#/components/responses/code500'
+ *       '403':
+ *          $ref: '#/components/responses/code403'
  *     tags:
  *     - Lockers
  *     summary: Search all lockers, including the booked ones. This is useful for lockers modification by admins
@@ -142,7 +146,11 @@ router.get('/', requireRole(roles.admin), async (req, res, next) => {
  *   get:
  *     responses:
  *       '200':
- *         description: 'OK'
+ *         $ref: '#/components/responses/code200'
+ *       '400':
+ *         $ref: '#/components/responses/code400'
+ *       '500':
+ *         $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Search an available locker (only available lockers are returned, booked ones are skipped).
@@ -156,7 +164,6 @@ router.get('/', requireRole(roles.admin), async (req, res, next) => {
  */
 router.get('/available', async (req, res, next) => {
     const regex = new RegExp(req.query.name, 'i')
-    //console.log(req);
     let lockers = await Locker.find(
         {name: {$regex: regex}, userId: {$ne: req.loggedUser.id}}
     )
@@ -254,7 +261,7 @@ router.get('/:lockerId', async (req, res, next) => {
 
 /**
  * @openapi
- * /api/v1/lockers:
+ * /api/v1/lockers/{lockerId}:
  *   put:
  *    responses:
  *      '200':
@@ -263,6 +270,8 @@ router.get('/:lockerId', async (req, res, next) => {
  *         $ref: '#/components/responses/code400'
  *      '500':
  *         $ref: '#/components/responses/code500'
+ *      '403':
+ *         $ref: '#/components/responses/code403'
  *    tags:
  *    - Lockers
  *    summary: Modify a locker
@@ -323,11 +332,17 @@ router.put('/:lockerId', requireRole(roles.admin), async (req, res, next) => {
 
 /**
  * @openapi
- * /api/v1/lockers:
+ * /api/v1/lockers/{lockerId}:
  *   delete:
  *     responses:
  *       '200':
  *         description: Locker deleted
+ *       '400':
+ *          $ref: '#/components/responses/code400'
+ *       '500':
+ *          $ref: '#/components/responses/code500'
+ *       '403':
+ *          $ref: '#/components/responses/code403'
  *     tags:
  *     - Lockers
  *     summary: Delete a locker
@@ -359,6 +374,10 @@ router.delete('/:lockerId', requireRole(roles.admin), async (req, res, next) => 
  *     responses:
  *       '200':
  *         description: Locker correctly booked
+ *       '400':
+ *          $ref: '#/components/responses/code400'
+ *       '500':
+ *          $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Book a locker
@@ -412,6 +431,10 @@ router.patch('/book', async (req, res, next) => {
  *     responses:
  *       '200':
  *         description: Locker booking correctly cancelled
+ *       '400':
+ *          $ref: '#/components/responses/code400'
+ *       '500':
+ *          $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Cancel the booking of the locker

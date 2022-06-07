@@ -61,4 +61,15 @@
  *                  type: number
  *                  description: Depth of the locker (centimeters)
  *                  example: 60
+ *     code403:
+ *        description: Permission denied due to inadequate role
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                message:
+ *                  type: string
+ *                  description: Error message
+ *                  example: Your role does not permit this action!
  */
