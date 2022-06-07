@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Locker = require('../db_models/Locker');
 const User = require('../db_models/User');
+const requireRole = require("../middlewares/requireRole");
+const roles = require("../config/roles");
 
 
 function handleError(res, msg = null) {
@@ -71,7 +73,7 @@ function checkIfEmpty({name, latitude, longitude, width, height, depth}, res) {
  *                 example: 60
  *
  */
-router.post('/', async (req, res, next) => {
+router.post('/', requireRole(roles.admin), async (req, res, next) => {
     try {
         if (checkIfEmpty(req.body, res)) return;
 
@@ -125,8 +127,7 @@ router.post('/', async (req, res, next) => {
  *           required: false
  *           description: Name of the locker the user is looking for
  */
-router.get('/', async (req, res, next) => {
-    // TODO: check if logged user is an admin
+router.get('/', requireRole(roles.admin), async (req, res, next) => {
     const regex = new RegExp(req.query.name, 'i')
     let lockers = await Locker.find(
         {name: {$regex: regex}}
@@ -137,7 +138,7 @@ router.get('/', async (req, res, next) => {
 
 /**
  * @openapi
- * /api/v1/lockers:
+ * /api/v1/lockers/available:
  *   get:
  *     responses:
  *       '200':
@@ -292,7 +293,7 @@ router.get('/:lockerId', async (req, res, next) => {
  *                 example: 60
  *
  */
-router.put('/:lockerId', async (req, res, next) => {
+router.put('/:lockerId', requireRole(roles.admin), async (req, res, next) => {
 
     if (checkIfEmpty(req.body, res)) {
         return;
@@ -338,7 +339,7 @@ router.put('/:lockerId', async (req, res, next) => {
  *           required: true
  *           description: Id of the locker which has to be deleted
  */
-router.delete('/:lockerId', async (req, res, next) => {
+router.delete('/:lockerId', requireRole(roles.admin), async (req, res, next) => {
     const lockerId = req.params.lockerId;
     console.log(lockerId);
     if (fieldIsEmpty(lockerId, 'Missing Locker id', res)) return;
