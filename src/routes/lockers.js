@@ -5,7 +5,7 @@ const User = require('../db_models/User');
 
 
 function handleError(res, msg = null) {
-    if (!msg) msg = "C'è stato un errore inaspettato. Stiamo lavorando per risolvere il problema.";
+    if (!msg) msg = "Unexpected error. We are working to solve the issue. Thanks for your patience.";
     res.status(msg ? 400 : 500);
     res.json({message: msg});
 }
@@ -21,7 +21,7 @@ function fieldIsEmpty(field, msgString, res) {
     return false;
 }
 
-function checks({name, latitude, longitude, width, height, depth}, res) {
+function checkIfEmpty({name, latitude, longitude, width, height, depth}, res) {
     return fieldIsEmpty(name, 'Missing name', res)
         || fieldIsEmpty(latitude, 'Missing latitude', res)
         || fieldIsEmpty(longitude, 'Missing longitude', res)
@@ -35,8 +35,12 @@ function checks({name, latitude, longitude, width, height, depth}, res) {
  * /api/v1/lockers:
  *   post:
  *     responses:
- *       '200':
- *         description: 'OK'
+ *      '200':
+ *        $ref: '#/components/responses/code200'
+ *      '400':
+ *        $ref: '#/components/responses/code400'
+ *      '500':
+ *        $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Register a new locker
@@ -49,24 +53,27 @@ function checks({name, latitude, longitude, width, height, depth}, res) {
  *             properties:
  *               name:
  *                 type: string
+ *                 example: Locker1
  *               latitude:
  *                 type: number
+ *                 example: 41° 53' 24″ E 12° 29' 32
  *               longitude:
  *                 type: number
+ *                 example: 41° 53' 24″ E 12° 29' 32
  *               width:
  *                 type: number
+ *                 example: 60
  *               height:
  *                 type: number
+ *                 example: 60
  *               depth:
  *                 type: number
- *               userId:
- *                 type: string
+ *                 example: 60
  *
  */
 router.post('/', async (req, res, next) => {
     try {
-        //console.log(req.loggedUser, req.body)
-        if (checks(req.body, res)) return;
+        if (checkIfEmpty(req.body, res)) return;
 
         const {
             name,
@@ -102,7 +109,11 @@ router.post('/', async (req, res, next) => {
  *   get:
  *     responses:
  *       '200':
- *         description: 'OK'
+ *          $ref: '#/components/responses/code200'
+ *       '400':
+ *          $ref: '#/components/responses/code400'
+ *       '500':
+ *          $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Search all lockers.
@@ -158,7 +169,48 @@ router.get('/available', async (req, res, next) => {
  *   get:
  *     responses:
  *       '200':
- *         description: 'OK'
+ *         description: List of booked lockers
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: Id of the locker in the database
+ *                   example: 6290daa478b876fa28581b97
+ *                 name:
+ *                   type: string
+ *                   description: Name of the locker inserted on registration
+ *                   example: Locker1
+ *                 latitude:
+ *                   type: number
+ *                   description: Latitude of the locker (for further api integration)
+ *                   example: 41° 53' 24″ E 12° 29' 32″
+ *                 longitude:
+ *                   type: number
+ *                   description: Longitude of the locker (for further api integration)
+ *                   example: 41° 53' 24″ E 12° 29' 32″
+ *                 width:
+ *                   type: number
+ *                   description: Width of the locker (centimeters)
+ *                   example: 60
+ *                 height:
+ *                   type: number
+ *                   description: Height of the locker (centimeters)
+ *                   example: 60
+ *                 depth:
+ *                   type: number
+ *                   description: Depth of the locker (centimeters)
+ *                   example: 60
+ *                 bookedAt:
+ *                   type: string
+ *                   description: Paragraph used to show when the locker has been booked
+ *                   example: Prenotato il 2022-06-06 alle ore 17:54
+ *       '400':
+ *           $ref: '#/components/responses/code400'
+ *       '500':
+ *           $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Get all locker booked by logged user.
@@ -178,6 +230,13 @@ router.get('/booked', async (req, res, next) => {
  * @openapi
  * /api/v1/lockers/{lockerId}:
  *   get:
+ *     responses:
+ *       '200':
+ *         $ref: '#/components/responses/code200'
+ *       '400':
+ *         $ref: '#/components/responses/code400'
+ *       '500':
+ *         $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
  *     summary: Search a locker by its id
@@ -197,41 +256,47 @@ router.get('/:lockerId', async (req, res, next) => {
  * @openapi
  * /api/v1/lockers:
  *   put:
- *     responses:
- *       '200':
- *         description: 'OK'
- *     tags:
- *     - Lockers
- *     summary: Modify a locker
- *     requestBody:
+ *    responses:
+ *      '200':
+ *         $ref: '#/components/responses/code200'
+ *      '400':
+ *         $ref: '#/components/responses/code400'
+ *      '500':
+ *         $ref: '#/components/responses/code500'
+ *    tags:
+ *    - Lockers
+ *    summary: Modify a locker
+ *    requestBody:
  *       require: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             properties:
- *               id:
- *                 type: string
  *               name:
  *                 type: string
+ *                 example: Locker1
  *               latitude:
  *                 type: number
+ *                 example: 41° 53' 24″ E 12° 29' 32
  *               longitude:
  *                 type: number
+ *                 example: 41° 53' 24″ E 12° 29' 32
  *               width:
  *                 type: number
+ *                 example: 60
  *               height:
  *                 type: number
+ *                 example: 60
  *               depth:
  *                 type: number
- *               userId:
- *                 type: string
+ *                 example: 60
  *
  */
-router.put('/:lockerId', async (req, res, next) => {
-    // if (!checks(req.body, res)) {
-    //     return;
-    // }
+router.put('/', async (req, res, next) => {
+    if (checkIfEmpty(req.body, res)) {
+        return;
+    }
 
     const id = req.params.lockerId;
     if (!req.params.lockerId) {
@@ -261,7 +326,7 @@ router.put('/:lockerId', async (req, res, next) => {
  *   delete:
  *     responses:
  *       '200':
- *         description: 'OK'
+ *         description: Locker deleted
  *     tags:
  *     - Lockers
  *     summary: Delete a locker
@@ -291,10 +356,10 @@ router.delete('/:lockerId', async (req, res, next) => {
  *   patch:
  *     responses:
  *       '200':
- *         description: 'OK'
+ *         description: Locker correctly booked
  *     tags:
  *     - Lockers
- *     summary: Book a locker by id for logged user
+ *     summary: Book a locker
  *     requestBody:
  *       require: true
  *       content:
@@ -304,6 +369,8 @@ router.delete('/:lockerId', async (req, res, next) => {
  *             properties:
  *               id:
  *                 type: string
+ *                 description: Id of the locker in the database
+ *                 example: 6290daa478b876fa28581b97
  *
  */
 router.patch('/book', async (req, res, next) => {
@@ -331,7 +398,6 @@ router.patch('/book', async (req, res, next) => {
 
     locker.userId = req.loggedUser.id;
     locker.bookedAt = year + "-" + month + "-" + day + " Alle ore " + hour + ":" + minutes + ":" + seconds;
-    console.log(locker.bookedAt);
     locker.save();
 
     res.sendStatus(200);
@@ -343,10 +409,10 @@ router.patch('/book', async (req, res, next) => {
  *   patch:
  *     responses:
  *       '200':
- *         description: 'OK'
+ *         description: Locker booking correctly cancelled
  *     tags:
  *     - Lockers
- *     summary: Cancel the booking of the locker for logged user
+ *     summary: Cancel the booking of the locker
  *     requestBody:
  *       require: true
  *       content:
@@ -356,6 +422,8 @@ router.patch('/book', async (req, res, next) => {
  *             properties:
  *               id:
  *                 type: string
+ *                 description: Id of the locker in the database
+ *                 example: 6290daa478b876fa28581b97
  *
  */
 router.patch('/cancel', async (req, res, next) => {

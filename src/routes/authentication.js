@@ -12,7 +12,40 @@ const roles = require('../config/roles');
  *     post:
  *      responses:
  *       '200':
- *         description: 'OK'
+ *         description: User correctly authenticated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                   description: Id dello user
+ *                   example: 6290daa478b876fa28581b97
+ *                 token:
+ *                   type: string
+ *                   description: Token per garantire l'accesso alle risorse
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+ *                 email:
+ *                   type: email
+ *                   description: Email dell'utente appena registrato
+ *                   example: Mariorossi@example.it
+ *                 role:
+ *                   type: string
+ *                   description: Ruolo dell'utente, può essere 'Admin' o 'User'
+ *                   example: User
+ *                 name:
+ *                   type: string
+ *                   description: Nome dell'utente appena registrato
+ *                   example: Mario
+ *                 surname:
+ *                   type: string
+ *                   description: Cognome dell'utente appena registrato
+ *                   example: Rossi
+ *       '400':
+ *         $ref: '#/components/responses/code400'
+ *       '500':
+ *         $ref: '#/components/responses/code500'
  *      tags:
  *       - Users
  *      summary: Authenticate user
@@ -25,8 +58,10 @@ const roles = require('../config/roles');
  *              properties:
  *                email:
  *                  type: string
+ *                  example: email@example.com
  *                password:
  *                  type: string
+ *                  example: password
  */
 //authentication
 router.post('/', async function(req, res) {
