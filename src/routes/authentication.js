@@ -94,7 +94,7 @@ router.post('/', async function(req, res) {
         id: user._id,
         token,
         email: user.email,
-        role: roles.user,
+        role: user.role,
         name: user.name,
         surname: user.surname
         //, self: "api/v1/users/" + user._id
