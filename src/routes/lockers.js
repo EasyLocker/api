@@ -243,7 +243,6 @@ router.get('/booked', async (req, res, next) => {
  */
 router.get('/:lockerId', async (req, res, next) => {
     const id = req.params.lockerId;
-    console.log(id);
     let lockers = await Locker.find(
         {_id: id}
     )
