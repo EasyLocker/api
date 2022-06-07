@@ -16,13 +16,14 @@ describe('Route /api/v1/users', () => {
                     password: await bcrypt.hash('correctPassword', 10), // 10 = salt rounds
                 };
 
+                let ret = dbEntry;
                 Object.keys(filter).forEach(key => {
                     if (filter[key] !== dbEntry[key]) {
-                        return true;
+                        ret = null;
                     }
                 });
 
-                return false;
+                return ret;
             }
         ));
         mocks.push(jest.spyOn(User.prototype, 'save').mockImplementation(async () => {
@@ -49,5 +50,29 @@ describe('Route /api/v1/users', () => {
                 expect(res.body.token).toBeDefined();
                 expect(saved).toBe(true);
             });
+    });
+
+    it('should deny the user creation due to invalid email', async () => {
+        await request(app)
+            .post('/api/v1/users/register')
+            .send({
+                name: 'John',
+                surname: 'Doe',
+                email: 'jhondoecom',
+                password: 'correctPassword',
+            })
+            .expect(400)
+    });
+
+    it('should deny the user creation due to existing email', async () => {
+        await request(app)
+            .post('/api/v1/users/register')
+            .send({
+                name: 'John',
+                surname: 'Doe',
+                email: 'existing@email.it',
+                password: 'correctPassword',
+            })
+            .expect(400)
     });
 });

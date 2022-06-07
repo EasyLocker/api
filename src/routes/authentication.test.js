@@ -6,6 +6,7 @@ describe('Route /api/v1/authenticate', () => {
     let userFindOneMockSpy;
 
     beforeAll(() => {
+        jest.setTimeout(10000);
         const User = require('../db_models/User');
         userFindOneMockSpy = jest.spyOn(User, 'findOne').mockImplementation((filter) =>
             ({
@@ -16,13 +17,14 @@ describe('Route /api/v1/authenticate', () => {
                         password: await bcrypt.hash('correctPassword', 10), // 10 = salt rounds
                     };
 
+                    let ret = dbEntry;
                     Object.keys(filter).forEach(key => {
                         if (filter[key] !== dbEntry[key]) {
-                            return null;
+                            ret = null;
                         }
                     });
 
-                    return dbEntry;
+                    return ret;
                 }
             })
         )
@@ -50,7 +52,37 @@ describe('Route /api/v1/authenticate', () => {
             .post('/api/v1/authenticate')
             .send({
                 email: 'wrong@email.it',
+                password: 'correctPassword'
+            })
+            .expect(400);
+    });
+
+    test('Authentication with an incorrect password should fail with 400 error code', () => {
+        return request(app)
+            .post('/api/v1/authenticate')
+            .send({
+                email: 'correct@email.it',
                 password: 'wrongPassword'
+            })
+            .expect(400);
+    });
+
+    test('Authentication with an empty email should fail with 400 error code', () => {
+        return request(app)
+            .post('/api/v1/authenticate')
+            .send({
+                email: '',
+                password: 'correctPassword'
+            })
+            .expect(400);
+    });
+
+    test('Authentication with an empty password should fail with 400 error code', () => {
+        return request(app)
+            .post('/api/v1/authenticate')
+            .send({
+                email: 'correct@email.it',
+                password: ''
             })
             .expect(400);
     });

@@ -118,7 +118,7 @@ router.post('/', requireRole(roles.admin), async (req, res, next) => {
  *          $ref: '#/components/responses/code500'
  *     tags:
  *     - Lockers
- *     summary: Search all lockers.
+ *     summary: Search all lockers, including the booked ones. This is useful for lockers modification by admins
  *     parameters:
  *         - in: query
  *           name: name
@@ -341,7 +341,6 @@ router.put('/:lockerId', requireRole(roles.admin), async (req, res, next) => {
  */
 router.delete('/:lockerId', requireRole(roles.admin), async (req, res, next) => {
     const lockerId = req.params.lockerId;
-    console.log(lockerId);
     if (fieldIsEmpty(lockerId, 'Missing Locker id', res)) return;
 
     let locker = await Locker.findOne({_id: lockerId}).exec();
@@ -450,7 +449,7 @@ router.patch('/cancel', async (req, res, next) => {
         locker.bookedAt = undefined;
         locker.save();
 
-        res.send();
+        res.sendStatus(200);
 
     } catch {
         handleError(res);
